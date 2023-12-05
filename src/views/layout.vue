@@ -8,8 +8,8 @@
                 </div>
             </div>
             <div class="header-right">
-                <el-button type="primary" style="margin-right: 5px;">发帖<el-icon style="font-size: 14px;margin-left: 7px;"><Plus /></el-icon></el-button>
-                <el-button type="primary" style="margin-right: 5px;">搜索<el-icon style="font-size: 14px;margin-left: 7px;"><Search /></el-icon></el-button>
+                <el-button type="primary" style="margin-right: 5px;">发帖<span class="iconfont icon-add"></span></el-button>
+                <el-button type="primary" style="margin-right: 5px;">搜索<span class="iconfont icon-search"></span></el-button>
                 <el-button-group>
                     <el-button type="primary" plain>登录</el-button>
                     <el-button type="primary" plain>注册</el-button>
