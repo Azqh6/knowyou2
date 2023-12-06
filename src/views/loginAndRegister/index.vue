@@ -28,7 +28,7 @@
                 </el-popover>
             </el-form-item>
             <!-- 请输入名称 -->
-            <el-form-item v-if="loginType==0">
+            <el-form-item v-if="loginType==0" prop="nickName">
                 <el-input v-model="dataForm.nickName" type="text" placeholder="请输入名称">
                     <template #prefix>
                         <span class="iconfont icon-account"></span>
@@ -36,7 +36,7 @@
                 </el-input>
             </el-form-item>
             <!-- 输入密码 -->
-            <el-form-item v-if="loginType==1">
+            <el-form-item v-if="loginType==1" prop="password">
                 <el-input v-model="dataForm.password" :type="psdType" placeholder="请输入密码">
                     <template #prefix>
                         <span class="iconfont icon-password"></span>
@@ -48,7 +48,7 @@
                 </el-input>
             </el-form-item>
             <!-- 注册密码 -->
-            <el-form-item v-if="loginType != 1">
+            <el-form-item v-if="loginType != 1" prop="registerPassword">
                 <el-input v-model="dataForm.registerPassword" :type="psdType" placeholder="请输入密码">
                     <template #prefix>
                         <span class="iconfont icon-password"></span>
@@ -60,7 +60,7 @@
                 </el-input>
             </el-form-item>
             <!-- 再次输入密码 -->
-            <el-form-item v-if="loginType != 1" >
+            <el-form-item v-if="loginType != 1" prop="reRegisterPassword">
                 <el-input v-model="dataForm.reRegisterPassword" :type="psdType" placeholder="请再次输入密码">
                     <template #prefix>
                         <span class="iconfont icon-password"></span>
@@ -128,13 +128,15 @@
 
 <script setup>
 import Dialog from '@/components/Dialog.vue'
-import { render } from 'sass';
+import md5 from 'js-md5'
 import{getCurrentInstance, ref,nextTick}from 'vue'
 const {proxy}=getCurrentInstance()
 const api={
     checkCode:'/api/checkCode',
     sendEmail:'/sendEmailCode',
-    register:'/register'
+    register:'/register',
+    login:'/login',
+    resetPwd:'/resetPwd'
 }
 const dataForm=ref({})
 const dataFormRef=ref()
@@ -165,11 +167,36 @@ const checkLogin=(type)=>{
     }
 }
 //表单校验规则
+const rePasswordValidate=(rule,value,callback)=>{
+    if(!value){
+        return
+    }else{
+        if(value==dataForm.value.registerPassword){
+            callback()
+        }else{
+            callback(rule.message)
+        }
+    }
+}
 const rules={
     email:[
         {required:true,message:'请输入邮箱',trigger:'blur'},
         {min:3,max:150,message:'输入的邮箱过短或过长',trigger:'blur'},
         {validator:proxy.Verify.email,message:'请输入正确的邮箱'}
+    ],
+    password:[
+        {required:true,message:'请输入密码',trigger:'blur'}
+    ],
+    nickName:[
+        {required:true,message:'请输入昵称'}
+    ],
+    registerPassword:[
+        {required:true,message:'请输入密码',trigger:'blur'},
+        {validator:proxy.Verify.password,message:'请输入带有字母和数字且位数在8-16位的密码'}
+    ],
+    reRegisterPassword:[
+        {required:true,message:'请再次输入密码'},
+        {validator:rePasswordValidate,message:'两次输入的密码不一样'}
     ]
 }
 //表单清空
@@ -212,7 +239,6 @@ const emailCheck=()=>{
         sendEmailCodeForm.value.email=dataForm.value.email
         emailCheckShow.value=true
     })
-
 }
 //发送邮件
 const sendEmailCode=()=>{
@@ -239,16 +265,28 @@ const sendEmailCode=()=>{
 }
 //注册
 const doSubmit=()=>{
-    dataFormRef.value.validate((valid)=>{
+    dataFormRef.value.validate(async (valid)=>{
         if(!valid){
             return 
         }
         const params=Object.assign({},dataForm.value)
-        if(loginType.value==0){
-            params.password=dataForm.value.registerPassword
+        const url=ref()
+        switch(loginType.value){
+            case 0:
+                params.password=dataForm.value.registerPassword;
+                url.value=api.register;
+                break;
+            case 1:
+                url.value=api.login;
+                params.password=md5(params.password)
+                break;
+            case 2:
+                url.value=api.resetPwd;
+                params.password=dataForm.value.reRegisterPassword
+                break;
         }
-        const res=proxy.Request({
-            url:api.register,
+        let res= await proxy.Request({
+            url:url.value,
             params:params,
             errorCallback:()=>{
                 changeCheckCode(0)
@@ -259,9 +297,7 @@ const doSubmit=()=>{
         }
         if(loginType.value==0){
             proxy.Message.success('注册成功，赶快去登录吧！')
-        setTimeout(()=>{
             showPanel(1)
-        },1500)
         }
 
     })
