@@ -28,7 +28,7 @@
 const props=defineProps({
     show:{
         type:Boolean,
-        default:true
+        default:'true'
     },
     title:{
         type:String,

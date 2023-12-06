@@ -11,18 +11,19 @@
                 <el-button type="primary" style="margin-right: 5px;">发帖<span class="iconfont icon-add"></span></el-button>
                 <el-button type="primary" style="margin-right: 5px;">搜索<span class="iconfont icon-search"></span></el-button>
                 <el-button-group>
-                    <el-button type="primary" plain>登录</el-button>
-                    <el-button type="primary" plain>注册</el-button>
+                    <el-button id="login" type="primary" plain @click="login(1)">登录</el-button>
+                    <el-button id="register" type="primary" plain @click="login(0)">注册</el-button>
                 </el-button-group>
             </div>
         </div>
     </div>
     <div class="content">
     </div>
-    <loginAndRegister></loginAndRegister>
+    <loginAndRegister ref="loginAndRegisterRef"></loginAndRegister>
 </template>
 
 <script setup>
+import {ref} from 'vue'
 import loginAndRegister from './loginAndRegister/index.vue'
 //logo
 const logo=[
@@ -56,6 +57,13 @@ const logo=[
     },
 ]
 const tabs=['首页','EasyBBs开发','程序员','前端','后端','社区管理']
+//登录注册
+const loginAndRegisterRef=ref()
+const login=(type)=>{
+    loginAndRegisterRef.value.showPanel(type)
+    document.getElementById('login').blur()
+    document.getElementById('register').blur()
+}
 </script>
 
 <style lang="scss" scoped>
