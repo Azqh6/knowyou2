@@ -1,7 +1,7 @@
 import axios from "axios";
 import { ElLoading } from "element-plus";
 import Message from './Message'
-// import store from "../store";
+import store from "../store";
 const contentTypeForm="application/x-www-form-urlencoded;charset=UTF-8";
 const contentTypeJson="application/json"
 const instance=axios.create({
@@ -37,8 +37,8 @@ instance.interceptors.response.use((response)=>{
     if(responseData.code==200){
         return responseData 
     }else if(responseData.code==901){
-        // store.commit("showLogin",true)
-        // store.commit("updateLoginUserInfo",null)
+        store.commit("showLogin",true)
+        store.commit("updateLoginUserInfo",null)
         return Promise.reject({showError:false,msg:'登录超时'})
     }else{
         if(errorCallback){

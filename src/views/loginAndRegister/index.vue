@@ -84,7 +84,7 @@
             </el-form-item>
             <!-- 记住我 -->
             <el-form-item style="margin: 0;">
-                <el-checkbox v-model="dataForm.checkMe" label="记住我"></el-checkbox>
+                <el-checkbox v-model="dataForm.rememberMe">记住我</el-checkbox>
             </el-form-item>
             <!-- 没有密码？忘记账号？ -->
             <el-form-item v-if="loginType==1">
@@ -130,6 +130,8 @@
 import Dialog from '@/components/Dialog.vue'
 import md5 from 'js-md5'
 import{getCurrentInstance, ref,nextTick}from 'vue'
+import {useStore} from 'vuex'
+const store=useStore()
 const {proxy}=getCurrentInstance()
 const api={
     checkCode:'/api/checkCode',
@@ -278,7 +280,11 @@ const doSubmit=()=>{
                 break;
             case 1:
                 url.value=api.login;
-                params.password=md5(params.password)
+                let cookieLoginInfo=proxy.VueCookies.get('loginInfo')
+                let cookiePassword=cookieLoginInfo==null?null:cookieLoginInfo.password
+                if(params.password != cookiePassword){
+                    params.password=md5(params.password)
+                }
                 break;
             case 2:
                 url.value=api.resetPwd;
@@ -295,10 +301,27 @@ const doSubmit=()=>{
         if(!res){
             return
         }
-        if(loginType.value==0){
-            proxy.Message.success('注册成功，赶快去登录吧！')
-            showPanel(1)
+        switch(loginType.value){
+            case 0:
+                proxy.Message.success('注册成功，赶快去登录吧')
+                showPanel(1)
+                break;
+            case 1:
+                if(params.rememberMe){
+                    let loginInfo={
+                        email:params.email,
+                        password:params.password,
+                        rememberMe:params.rememberMe
+                    }
+                    proxy.VueCookies.set('loginInfo',loginInfo,'7d')
+                } else {
+                    proxy.VueCookies.remove('logInfo')
+                }
+                proxy.Message.success('登录成功')  
+                loginShow.value=false
+                store.commit('updateLoginUserInfo',res.data)
         }
+
 
     })
 }
