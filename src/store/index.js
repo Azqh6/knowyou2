@@ -2,7 +2,10 @@ import {createStore} from 'vuex'
 export default createStore({
     state:{
         loginUserInfo:'',
-        showLogin:false
+        showLogin:false,
+        boardList:[],
+        articlePboard:'',
+        articleBoard:''
     },
     getters:{},
     mutations:{
@@ -11,7 +14,16 @@ export default createStore({
         },
         showLogin(state,value){
             state.showLogin=value
-        }
+        },
+        setBoardList(state,value){
+            state.boardList=value
+        },
+        setArticlePboard(state,value){
+            state.articlePboard=value.pBoard
+        },
+        setArticleBoard(state,value){
+            state.articleBoard=value.board
+        },
     },
     actions:{}
 })

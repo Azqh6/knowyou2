@@ -4,7 +4,7 @@
             <div class="header-left">
                 <div class="logo"><span v-for="(item,index) in logo" :style="{color:item.color}">{{ item.name }}</span></div>
                 <div class="header-tab">
-                    <div class="tabs">首页</div>
+                    <router-link to="/" :class="['tabs',store.state.articlePboard==undefined?'avtice':'']">首页</router-link>
                     <div v-for="(item,index) in boardList">
                         <el-popover
                         placement="bottom-start"
@@ -13,13 +13,13 @@
                         v-if="item.children.length>0"
                     >   
                         <div class="sub-board-list" >
-                            <div v-for="(items,index) in item.children" class="sub-board">{{ items.boardName }}</div>
+                            <div v-for="(items,index) in item.children" :class="['sub-board',store.state.articleBoard==items.boardId?'active':'']" @click="handlerBoard(items)">{{ items.boardName }}</div>
                         </div>
                         <template #reference>
-                            <div class="tabs">{{item.boardName}}</div>
+                            <div :class="['tabs',store.state.articlePboard==item.boardId?'avtice':'']" @click="handlerPboard(item)">{{item.boardName}}</div>
                         </template>
-                    </el-popover>
-                        <div v-else class="tabs">{{item.boardName}}</div>
+                        </el-popover>
+                        <div v-else :class="['tabs',store.state.articlePboard==item.boardId?'avtice':'']" @click="handlerPboard(item)">{{item.boardName}}</div>
                     </div>
                 </div>
             </div>
@@ -84,6 +84,7 @@
         </div>
     </div>
     <div class="content">
+        <router-view></router-view>
     </div>
     <loginAndRegister ref="loginAndRegisterRef"></loginAndRegister>
 </template>
@@ -91,10 +92,12 @@
 <script setup>
 import {useStore} from 'vuex'
 import loginAndRegister from './loginAndRegister/index.vue'
+import {useRouter,useRoute} from 'vue-router'
 import { ref, reactive, getCurrentInstance, nextTick,watch,onMounted } from "vue"
 const { proxy } = getCurrentInstance();
 const store=useStore()
-const showLogin=ref(true)
+const router=useRouter()
+const route=useRoute()
 const api={
     getUserInfo:'/getUserInfo',
     logout:'/logout',
@@ -186,9 +189,11 @@ const getBoard=async()=>{
     if(!res){
         return
     }
-    boardList.value=res.data
+    boardList.value=res.data    
+    store.commit('setBoardList',res.data)
 
 }
+getBoard()
 //获取消息
 const messageCount=ref({})
 const getMessageCount=async ()=>{
@@ -200,7 +205,14 @@ const getMessageCount=async ()=>{
     }
     messageCount.value=res.data
 }
-
+//点击一级板块
+const handlerPboard=(board)=>{
+    router.push('/forum/'+board.boardId)
+}
+//点击二级板块
+const handlerBoard=(board)=>{
+    router.push('/forum/'+board.pBoardId+'/'+board.boardId)
+}
 //滚动隐藏导航栏
 const Yoffset=ref(0)
 document.addEventListener('scroll',()=>{
@@ -246,6 +258,10 @@ document.addEventListener('scroll',()=>{
                     padding: 0 10px;
                     color: #61666d;
                     cursor: pointer;
+                    text-decoration: none;
+                }
+                .avtice{
+                    color: var(--hoverColor);
                 }
                 .tabs:hover{
                     color: var(--hoverColor);
@@ -292,7 +308,6 @@ document.addEventListener('scroll',()=>{
     height: 1200px;
     margin: 0 auto;
     margin-top: 60px;
-    background-color: #fff;
 }
 </style>
 <style lang="scss" >
@@ -307,6 +322,9 @@ document.addEventListener('scroll',()=>{
             color:rgb(119, 118, 118);
             margin-top: 10px;
             cursor: pointer;
+        }
+        .active{
+            color: var(--hoverColor);
         }
         .sub-board:hover{
             color: var(--hoverColor);

@@ -20,6 +20,7 @@ import Message from '@/utils/Message'
 
 //全局组件
 import Avatar from '@/components/Avatar.vue'
+import DataList from '@/components/DataList.vue'
 const app=createApp(App)
 app.use(ElementPlus)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
@@ -38,5 +39,7 @@ app.config.globalProperties.Verify=Verify
 app.config.globalProperties.Request=Request
 app.config.globalProperties.Message=Message
 app.config.globalProperties.VueCookies=VueCookies
+
 app.component('Avatar',Avatar)
+app.component('DataList',DataList)
 app.mount('#app')
