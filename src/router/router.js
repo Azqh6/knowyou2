@@ -21,6 +21,11 @@ const router=createRouter({
                     path:'/forum/:pBoard/:board',
                     name:"二级板块",
                     component:()=>import('@/views/article/ArticleList.vue')
+                },
+                {
+                    path:'/post/:articleId',
+                    name:'文章详情',
+                    component:()=>import('@/views/articleDetails/articleDetails.vue')
                 }
             ]
         }

@@ -1,3 +1,5 @@
 1.el-button点击后样式回显
 2.scrolltop兼容性问题
     let scrollTop=document.documentElement.scrollTop || document.body.scrollTop（要doctype声明才行） || window.pageYOffset(ie678无效，safari只能用这个)
+3.:src动态引入资源，要加require问题
+4.锚点定位 scrollIntoView

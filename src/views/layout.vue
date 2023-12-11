@@ -26,11 +26,11 @@
             <div class="header-right">
                 <el-button type="primary" style="margin-right: 5px;">发帖<span class="iconfont icon-add"></span></el-button>
                 <el-button type="primary" style="margin-right: 5px;">搜索<span class="iconfont icon-search"></span></el-button>
-                <el-button-group v-if="store.state.showLogin">
+                <el-button-group v-if="store.state.loginUserInfo==null">
                     <el-button id="login" type="primary" plain @click="login(1)">登录</el-button>
                     <el-button id="register" type="primary" plain @click="login(0)">注册</el-button>
                 </el-button-group>
-                <div class="userInfo" v-if="!store.state.showLogin">
+                <div class="userInfo" v-if="store.state.loginUserInfo !== null">
                     <div class="message">
                         <el-dropdown placement="bottom">
                             <span class="el-dropdown-link">  
@@ -64,8 +64,6 @@
                             </template>
                         </el-dropdown>
                     </div>
-
-
                     <div class="headPhoto">
                     <el-dropdown placement="bottom">
                         <span class="el-dropdown-link">  
@@ -172,7 +170,6 @@ const logout= async()=>{
 }
 const userInfo=ref({})
 watch(() =>store.state.loginUserInfo, (newVal, oldVal) => {
-    console.log(newVal);
     if(newVal !== undefined && newVal !== null){
         userInfo.value=newVal
         store.commit('showLogin',false)
@@ -237,6 +234,7 @@ document.addEventListener('scroll',()=>{
     height: 60px;
     box-shadow:0 5px 5px #ddd ;
     background-color: #fff;
+    z-index: 999;
     .header-nav{
         width: 1300px;
         height: 100%;

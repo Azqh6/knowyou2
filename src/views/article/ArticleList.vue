@@ -12,15 +12,17 @@
             <el-divider direction="vertical"></el-divider>
             <div :class="{active:orderType==2?'active':''}" @click="changeOrderType(2)">最新</div>
         </div>
-        <!-- <DataList :dataSource="articleList" >
-           
-        </DataList> -->
-        {{articleList}}
+        <DataList :dataSource="articleList" >
+           <template v-slot="data" @loadData="getArticleList">
+            <ArticleItem :data="data.data"></ArticleItem>
+           </template>
+        </DataList>
     </div>
   </div>
 </template>
 
 <script setup>
+import ArticleItem from "./ArticleItem.vue";
 import { ref, reactive, getCurrentInstance, nextTick,onMounted,watch } from "vue"
 import {useStore} from 'vuex'
 import {useRouter,useRoute} from 'vue-router'
@@ -84,7 +86,8 @@ watch(() => route.params, (newVal, oldVal) => {
     pBoardId.value=newVal.pBoard
     boardId.value=newVal.board
     getArticleList()
-    store.commit('setArticleBoard',newVal)
+    store.commit('setArticleBoard',newVal.board)
+    store.commit('setArticlePboard',newVal.pBoard)
 }, { immediate: true, deep: true });
 </script>
 
@@ -117,6 +120,7 @@ watch(() => route.params, (newVal, oldVal) => {
         padding: 10px 15px;
         align-items: center;
         cursor: pointer;
+        border-bottom: 1px solid #ddd;
     }
     .active{
         color: var(--hoverColor);

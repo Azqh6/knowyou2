@@ -1,5 +1,5 @@
 <template>
-    <Dialog :show="loginShow" :title="title" :showCancel="false" width="400px" @close="loginShow=false">
+    <Dialog :show="store.state.showLogin" :title="title" :showCancel="false" width="400px" @close="store.commit('showLogin',false)">
         <el-form :model="dataForm" :rules="rules" ref="dataFormRef">
             <!-- 邮箱 -->
             <el-form-item prop="email">
@@ -142,14 +142,14 @@ const api={
 }
 const dataForm=ref({})
 const dataFormRef=ref()
-const loginShow=ref(false)
+const loginShow=ref(store.state.showLogin)
 const showPanel=(type)=>{
-    loginShow.value=true
+    store.commit('showLogin',true)
     checkLogin(type)
 }
 defineExpose({showPanel})
 // 0注册 1登录 2重置密码
-const loginType=ref(0)
+const loginType=ref(1)
 const title=ref('登录')
 const checkLogin=(type)=>{
     resetForm()
@@ -318,7 +318,7 @@ const doSubmit=()=>{
                     proxy.VueCookies.remove('logInfo')
                 }
                 proxy.Message.success('登录成功')  
-                loginShow.value=false
+                store.commit('showLogin',false)
                 store.commit('updateLoginUserInfo',res.data)
         }
 
