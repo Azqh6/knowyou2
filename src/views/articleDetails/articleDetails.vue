@@ -22,7 +22,7 @@
                 </div>
             </div>
         </div>
-        <div class="content" v-html="articleDetails.content"></div>
+        <div class="content" id="content" v-html="articleDetails.content"></div>
     </div>
   </div>
   <!-- 附件 -->
@@ -34,7 +34,7 @@
             <span>{{Utils.sizeToStr(attachment.fileSize)}}</span>
             <span>需要<span style="color: red;margin: 0 5px;">{{attachment.integral}}</span>积分</span>
             <span>已下载{{attachment.downloadCount}}次</span>
-            <div class="fileDown">下载</div>
+            <div class="fileDown" @click="fileDownLoad(attachment.fileId)">下载</div>
         </div>
   </div>
   <div style="height: 2000px;"></div>
@@ -54,9 +54,14 @@
         <span class="iconfont icon-attachment" style="font-size: 22px;"></span>
     </div>
   </div>
+  
+  <ImageViewer ref="imageViewerRef" :imageList="previewImgList"></ImageViewer>
 </template>
 
 <script setup>
+import ImageViewer from '@/components/ImageViewer.vue'
+import hljs from "highlight.js";
+import "highlight.js/styles/atom-one-light.css"
 import { ref, reactive, getCurrentInstance, nextTick,watch,onMounted } from "vue"
 import {useRouter,useRoute} from 'vue-router'
 import { useStore } from "vuex";
@@ -66,7 +71,9 @@ const store=useStore()
 const { proxy } = getCurrentInstance();
 const api={
     getArticleDetail:'/forum/getArticleDetail',
-    dolike:'/forum/doLike'
+    dolike:'/forum/doLike',
+    getUserDownloadInfo:'/forum/getUserDownloadInfo',
+    attachmentDownload:'/api/forum/attachmentDownload'
 }
 onMounted(()=>{
     getArticleDetails()
@@ -93,12 +100,11 @@ const getArticleDetails=async()=>{
     haveLike.value=res.data.haveLike
     console.log(res.data);
     store.commit('setArticlePboard',articleDetails.value.pBoardId)
-    console.log(store.state);
-    // store.commit('setArticleBoard',articleDetails.value.boardId)
+    imagePreview()
+    highlightCode()
 }
 
 //点赞
-
 const doLike=async ()=>{
     if(store.state.loginUserInfo==null){
         store.commit('showLogin',true)
@@ -120,7 +126,41 @@ const doLike=async ()=>{
   }
     articleDetails.value.goodCount += goodCount
 }
+//附件下载
+const fileDownLoad=async(id)=>{
+    if(attachment.value.integral==0 || articleDetails.value.userId==store.state.loginUserInfo.userId){
+        document.location.href=api.attachmentDownload+'?fileId='+id
+        attachment.value.downloadCount +=1
+        return
+    }
+    if(store.state.loginUserInfo==null){
+        store.commit('showLogin',true)
+        return
+    }
+    let res=await proxy.Request({
+        url:api.getUserDownloadInfo,
+        params:{
+            fileId:id
+        }
+    })
+    if(!res){
+        return
+    }
+    if(res.data.haveDownload){
+        document.location.href=api.attachmentDownload+'?fileId='+id
+        attachment.value.downloadCount +=1
+        return
+    }
+    if(res.data.userIntegral<attachment.value.integral){
+        proxy.Message.warning('你的积分不够，无法下载')
+        return
+    }
+    proxy.Confirm(`你还有${res.data.userIntegral}积分，当前下载会扣除${attachment.value.integral}积分,确定要下载吗？`,()=>{
+        document.location.href=api.attachmentDownload+'?fileId='+id
+        attachment.value.downloadCount +=1
+  })
 
+}
 //快捷栏附件
 const attachmentBtn=()=>{
     let atBtn=document.getElementById('attachment')
@@ -130,7 +170,32 @@ const attachmentBtn=()=>{
         inline:'start'
     })
 }
-
+//图片预览
+const imageViewerRef=ref(null)
+const previewImgList=ref([])
+const imagePreview=()=>{
+  nextTick(()=>{
+    const imageNodeList=document.querySelector("#content").querySelectorAll("img")
+    const imageList=[]
+    imageNodeList.forEach((item,index)=>{
+      const src=item.getAttribute("src")
+      imageList.push(src)
+      item.addEventListener('click',()=>{
+        imageViewerRef.value.show(index)
+      })
+    })
+    previewImgList.value=imageList
+  })
+}
+//代码高亮
+const highlightCode=()=>{
+  nextTick(()=>{
+    let blocks=document.querySelectorAll('pre code')
+    blocks.forEach((item)=>{
+      hljs.highlightBlock(item)
+    })
+  })
+}
 //监听路由变化
 watch(() =>route.params, (newVal, oldVal) => {
     articleId.value=newVal.articleId

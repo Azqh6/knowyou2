@@ -3,3 +3,6 @@
     let scrollTop=document.documentElement.scrollTop || document.body.scrollTop（要doctype声明才行） || window.pageYOffset(ie678无效，safari只能用这个)
 3.:src动态引入资源，要加require问题
 4.锚点定位 scrollIntoView
+5.图片预览 el-plus中 el-image-viewer
+6.代码高亮 highlight.js
+7.附件下载 document.location.href=

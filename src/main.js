@@ -18,6 +18,7 @@ import Request from '@/utils/Request.js'
 import Verify from '@/utils/Verify'
 import Message from '@/utils/Message'
 import Utils from './utils/Utils.js'
+import Confirm from './utils/Utils'
 //全局组件
 import Avatar from '@/components/Avatar.vue'
 import DataList from '@/components/DataList.vue'
@@ -40,6 +41,7 @@ app.config.globalProperties.Request=Request
 app.config.globalProperties.Message=Message
 app.config.globalProperties.VueCookies=VueCookies
 app.config.globalProperties.Utils=Utils
+app.config.globalProperties.Confirm=Confirm
  
 app.component('Avatar',Avatar)
 app.component('DataList',DataList)
