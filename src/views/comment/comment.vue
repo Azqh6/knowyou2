@@ -1,9 +1,9 @@
 <template>
     <!-- 标题 -->
     <div class="title">
-        评论<span style="font-size: 15px; margin-left: 5px;">{{ commentCount }}</span>
+        评论<span style="font-size: 15px; margin-left: 5px;">{{ commentList.totalCount }}</span>
         <span style="font-size: 16px;margin-left: 30px;">
-            热榜<el-divider direction="vertical" />最新
+            <span @click="changeType(0)">热榜</span><el-divider direction="vertical" /><span @click="changeType(1)">最新</span>
         </span>
     </div>
     <!-- 发表评论 -->
@@ -23,23 +23,28 @@
 <script setup>
 import commentItem from "./commentItem.vue";
 import postComment from "./postComment.vue";
-import { ref, reactive, getCurrentInstance, nextTick } from "vue"
+import { ref, reactive, getCurrentInstance, nextTick ,onMounted} from "vue"
 const { proxy } = getCurrentInstance();
 const api={
     loadComment:'/comment/loadComment'
 }
+ onMounted(() => {
+    getLoadComment()
+ })
 const props=defineProps({
     articleId:{
     },
     commentCount:{}
 })
-//获取请求列表
-const commentList=ref('')
+
+const commentList=ref({})
 const getLoadComment=async ()=>{
     let res= await proxy.Request({
         url:api.loadComment,
         params:{
-            articleId:props.articleId
+            pageNo: commentList.value.pageNo,
+            articleId:props.articleId,
+            orderType:orderType.value
         }
     })
     if(!res){
@@ -48,10 +53,17 @@ const getLoadComment=async ()=>{
     commentList.value=res.data
     console.log(commentList.value);
 }
-getLoadComment()
+//获取请求列表
+const orderType=ref(0)
+const changeType=(type)=>{
+    orderType.value=type
+    getLoadComment()
+}
 //获取最新的评论
 const getNewComment=(data)=>{
-    commentList.value.list.push(data)
+    commentList.value.list.unshift(data)
+    commentList.value.totalCount++
+
 }
 const getCommentChildren=(res)=>{
     commentList.value.list.forEach(item=>{

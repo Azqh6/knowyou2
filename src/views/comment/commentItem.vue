@@ -15,7 +15,7 @@
                 </div>
                 <div class="commentTime">
                     {{ commentData.postTime }} · {{ commentData.userIpAddress }}
-                    <span :class="['iconfont icon-good',commentData.likeType==1?'like':'']" @click="dolike(commentData.commentId)">&nbsp;{{ commentData.goodCount }}</span>
+                    <span :class="['iconfont icon-good',commentData.likeType==1?'like':'']" @click="dolike(commentData)">&nbsp;{{ commentData.goodCount }}</span>
                     <span class="iconfont icon-comment"
                         @click="replyComment(commentData.userId, commentData.commentId)">&nbsp;回复</span>
                 </div>
@@ -31,7 +31,7 @@
                 </div>
                 <div class="bottom">
                     <span style="color: #61666d;margin-right: 10px;">{{item.postTime}}&nbsp;&nbsp;·  {{ item.userIpAddress }}</span>
-                    <span :class="['iconfont icon-good',item.likeType==1?'like':'']" @click="dolike(item.commentId)">&nbsp;{{ item.goodCount }}</span>
+                    <span :class="['iconfont icon-good',item.likeType==1?'like':'']" @click="dolike(item)">&nbsp;{{ item.goodCount }}</span>
                     <span class="iconfont icon-comment"  @click="replyComment(item.userId, item.pCommentId)" >&nbsp;回复</span>
                 </div>
                 
@@ -47,7 +47,9 @@
 <script setup>
 import postComment from "./postComment.vue";
 import { ref, reactive, getCurrentInstance, nextTick } from "vue"
+import {useStore} from 'vuex'
 const { proxy } = getCurrentInstance();
+const store=useStore()
 const api={
     doLike:'/comment/doLike'
 }
@@ -60,6 +62,10 @@ const replyUserId = ref()
 const commentId = ref()
 const showReply = ref(false)
 const replyComment = (id, pId) => {
+    if(store.state.loginUserInfo==null){
+        store.commit('showLogin',true)
+        return
+    }
     showReply.value = true
     replyUserId.value = id
     commentId.value = pId
@@ -69,19 +75,18 @@ const getPostComment=(res)=>{
     emit('commentChildren',res)
 }
 //评论点赞
-let haveLike=ref(true)
-const dolike=async(id)=>{
+const dolike=async(data)=>{
     let res= await proxy.Request({
         url:api.doLike,
         params:{
-            commentId:id
+            commentId:data.commentId
         }
     }) 
     if(!res){
             return
         }
     emit('commentDoLike',res.data)
-    haveLike.value = !haveLike.value
+    data.likeType=res.data.likeType
 }
 </script>
 

@@ -72,6 +72,9 @@ const rules={
 const formDataRef=ref()
 const emit=defineEmits(['postedComment'])
 const postComment=()=>{
+    if(store.state.loginUserInfo==null){
+        store.commit('showLogin',true)
+    }
     formDataRef.value.validate(async(valid)=>{
         if(!valid){
             return
