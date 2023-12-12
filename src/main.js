@@ -22,6 +22,7 @@ import Confirm from './utils/Utils'
 //全局组件
 import Avatar from '@/components/Avatar.vue'
 import DataList from '@/components/DataList.vue'
+import imageViewer from '../src/components/ImageViewer.vue'
 const app=createApp(App)
 app.use(ElementPlus)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {

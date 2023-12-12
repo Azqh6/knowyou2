@@ -37,7 +37,10 @@
             <div class="fileDown" @click="fileDownLoad(attachment.fileId)">下载</div>
         </div>
   </div>
-  <div style="height: 2000px;"></div>
+  <!-- 评论 -->
+  <div class="comments">
+    <comment :articleId="articleId" :commentCount="articleDetails.commentCount"></comment>
+  </div>
   <!-- 快捷栏 -->
   <div class="left">
     <div class="like" @click="doLike"> 
@@ -54,11 +57,12 @@
         <span class="iconfont icon-attachment" style="font-size: 22px;"></span>
     </div>
   </div>
-  
   <ImageViewer ref="imageViewerRef" :imageList="previewImgList"></ImageViewer>
+
 </template>
 
 <script setup>
+import comment from '../comment/comment.vue';
 import ImageViewer from '@/components/ImageViewer.vue'
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-light.css"
@@ -98,7 +102,6 @@ const getArticleDetails=async()=>{
     articleDetails.value=res.data.forumArticle
     attachment.value=res.data.attachment
     haveLike.value=res.data.haveLike
-    console.log(res.data);
     store.commit('setArticlePboard',articleDetails.value.pBoardId)
     imagePreview()
     highlightCode()
@@ -216,7 +219,7 @@ watch(() =>route.params, (newVal, oldVal) => {
 .article-box{
     position: relative;
     padding-top: 10px;
-    width: 1300px;
+    width: 1000px;
     margin: 0 auto;
     .board-nav{
         display: flex;
@@ -264,7 +267,10 @@ watch(() =>route.params, (newVal, oldVal) => {
     }
 }
 .attachment{
+    width: 1000px;
+    box-sizing: border-box;
     background-color: #fff;
+    margin: 0 auto;
     margin-top: 20px;
     padding: 20px;
     .title{
@@ -299,6 +305,15 @@ watch(() =>route.params, (newVal, oldVal) => {
         }
 
     }
+}
+.comments{
+    box-sizing: border-box;
+    background-color: #fff;
+    width: 1000px;
+    padding: 20px;
+    margin: 0 auto;
+    margin-top: 20px;
+    min-height: 300px;
 }
 .left{
     position: fixed;

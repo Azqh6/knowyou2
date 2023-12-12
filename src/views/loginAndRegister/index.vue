@@ -343,7 +343,6 @@ const changePsdType=(type)=>{
 .checkCode{
     width: 130px;
     height: 38px;
-    background-color: red;
 }
 .footer{
     width: 100%;
