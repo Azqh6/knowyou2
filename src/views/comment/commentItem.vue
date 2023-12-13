@@ -18,8 +18,9 @@
                     <span :class="['iconfont icon-good',commentData.likeType==1?'like':'']" @click="dolike(commentData)">&nbsp;{{ commentData.goodCount }}</span>
                     <span class="iconfont icon-comment"
                         @click="replyComment(commentData.userId, commentData.commentId)">&nbsp;回复</span>
+                    <span v-show="store.state.loginUserInfo !== null && store.state.loginUserInfo.userId==userId " class="makeTop">置顶</span>
                 </div>
-
+                
             </div>
 
         </div>
@@ -46,7 +47,7 @@
 
 <script setup>
 import postComment from "./postComment.vue";
-import { ref, reactive, getCurrentInstance, nextTick } from "vue"
+import { ref, reactive, getCurrentInstance, nextTick,inject } from "vue"
 import {useStore} from 'vuex'
 const { proxy } = getCurrentInstance();
 const store=useStore()
@@ -54,9 +55,9 @@ const api={
     doLike:'/comment/doLike'
 }
 const props = defineProps({
-    commentData: {}
+    commentData: {},
 })
-const commentData = ref(props.commentData.data)
+const userId=inject('articleUserId')
 //回复评论
 const replyUserId = ref()
 const commentId = ref()
@@ -93,7 +94,7 @@ const dolike=async(data)=>{
 <style lang="scss" scoped>
 
 .commentLists {
-    margin-bottom: 50px;
+    margin-bottom: 20px;
     border-bottom: 1px solid #ddd;
     padding-bottom: 20px;
 
@@ -130,11 +131,16 @@ const dolike=async(data)=>{
                 color: #61666d;
                 .like{
                 color: var(--hoverColor);
-            }
+                }
 
                 .iconfont {
                     cursor: pointer;
                     margin-left: 20px;
+                }
+                .makeTop{
+                    font-size: 14px;
+                    margin-left: 20px;
+                    cursor: pointer;
                 }
             }
         }

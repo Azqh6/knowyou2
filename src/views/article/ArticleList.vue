@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="articleBox"> 
     <div class="childrenBoards" v-if="boardLists && boardLists.length>0">
         <div><router-link :class="['itemBoard',store.state.articleBoard==null?'active':'']" :to="'/forum/'+pBoard">全部</router-link></div>
         <div v-for="(item,index) in boardLists" ><router-link :class="['itemBoard',item.boardId==store.state.articleBoard?'active':'']" :to="'/forum/'+item.pBoardId+'/'+item.boardId">{{ item.boardName}}</router-link></div>
@@ -92,7 +92,10 @@ watch(() => route.params, (newVal, oldVal) => {
 </script>
 
 <style lang="scss" scoped>
-.childrenBoards{
+.articleBox{
+    width: 1300px;
+    margin: 0 auto;
+    .childrenBoards{
     height: 23px;
     box-sizing: content-box;
     padding: 10px 0px;
@@ -126,4 +129,6 @@ watch(() => route.params, (newVal, oldVal) => {
         color: var(--hoverColor);
     }
 }
+}
+
 </style>

@@ -3,7 +3,7 @@
     <div class="title">
         评论<span style="font-size: 15px; margin-left: 5px;">{{ commentList.totalCount }}</span>
         <span style="font-size: 16px;margin-left: 30px;">
-            <span @click="changeType(0)">热榜</span><el-divider direction="vertical" /><span @click="changeType(1)">最新</span>
+            <span :class="{active:orderType==0}" @click="changeType(0)">热榜</span><el-divider direction="vertical" /><span :class="{active:orderType==1}" @click="changeType(1)">最新</span>
         </span>
     </div>
     <!-- 发表评论 -->
@@ -11,10 +11,10 @@
         <postComment :articleId="props.articleId" :width="800" @postedComment="getNewComment"></postComment>
     </div>
     <!-- 评论 -->
-    <div class="commentList">
+    <div class="commentList" >
         <DataList :dataSource="commentList">
-            <template #="data">
-                <commentItem :commentData="data" @commentChildren="getCommentChildren" @commentDoLike="getCommentDoLike"></commentItem>
+            <template #default="{data}">
+                <commentItem :commentData="data"  @commentChildren="getCommentChildren" @commentDoLike="getCommentDoLike"></commentItem>
             </template>
         </DataList>
     </div>
@@ -34,9 +34,8 @@ const api={
 const props=defineProps({
     articleId:{
     },
-    commentCount:{}
+    commentCount:{},
 })
-
 const commentList=ref({})
 const getLoadComment=async ()=>{
     let res= await proxy.Request({
@@ -88,6 +87,7 @@ const getCommentDoLike=(res)=>{
                 item.children.forEach(items=>{
                     if(items.commentId==res.commentId){
                         items.goodCount=res.goodCount
+                        return
                     }
                    
                 })
@@ -99,10 +99,16 @@ const getCommentDoLike=(res)=>{
 </script>
 
 <style lang="scss" scoped>
+.active{
+    color: var(--hoverColor);
+}
 .title{
     font-size: 23px;
     font-weight: 500;
     margin-bottom: 20px;
+    span{
+        cursor: pointer;
+    }
 }
 .commentList{
     margin-top: 15px;

@@ -19,6 +19,9 @@
                 <div class="time">
                     {{articleDetails.postTime}}·{{ articleDetails.userIpAddress }}
                    <span class="read"><span class="iconfont icon-eye-solid"></span>{{ articleDetails.readCount }}</span>
+                    <span v-if="store.state.loginUserInfo !== null && articleDetails.userId == store.state.loginUserInfo.userId">
+                        <router-link :to="'/editPost/'+articleDetails.articleId"><span>编辑</span></router-link>
+                    </span>
                 </div>
             </div>
         </div>
@@ -38,8 +41,8 @@
         </div>
   </div>
   <!-- 评论 -->
-  <div class="comments">
-    <comment :articleId="articleId" :commentCount="articleDetails.commentCount"></comment>
+  <div class="comments" id="comments">
+    <comment  :articleId="articleId" :commentCount="articleDetails.commentCount"></comment>
   </div>
   <!-- 快捷栏 -->
   <div class="left">
@@ -48,12 +51,12 @@
             <span :class="['iconfont icon-good',haveLike?'active':'']" style="font-size: 22px;"></span>
         </el-badge> 
     </div>
-    <div class="comment">
+    <div class="comment"  @click="attachmentBtn('comments')">
         <el-badge :value="articleDetails.commentCount">
             <span class='iconfont icon-comment' style="font-size: 22px;"></span>
         </el-badge> 
     </div>
-    <div class="attachment-contral" v-if="article.attachment !== null"  @click="attachmentBtn" >
+    <div class="attachment-contral" v-if="article.attachment !== null"  @click="attachmentBtn('attachment')" >
         <span class="iconfont icon-attachment" style="font-size: 22px;"></span>
     </div>
   </div>
@@ -66,7 +69,7 @@ import comment from '../comment/comment.vue';
 import ImageViewer from '@/components/ImageViewer.vue'
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-light.css"
-import { ref, reactive, getCurrentInstance, nextTick,watch,onMounted } from "vue"
+import { ref, reactive, getCurrentInstance, nextTick,watch,onMounted,provide } from "vue"
 import {useRouter,useRoute} from 'vue-router'
 import { useStore } from "vuex";
 const route=useRoute()
@@ -82,6 +85,7 @@ const api={
 onMounted(()=>{
     getArticleDetails()
 })
+
 //获取文章详情
 const article=ref({})
 const articleId=ref()
@@ -165,8 +169,8 @@ const fileDownLoad=async(id)=>{
 
 }
 //快捷栏附件
-const attachmentBtn=()=>{
-    let atBtn=document.getElementById('attachment')
+const attachmentBtn=(id)=>{
+    let atBtn=document.getElementById(id)
     atBtn.scrollIntoView({
         behavior:'smooth',
         block:'start',

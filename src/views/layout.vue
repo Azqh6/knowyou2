@@ -24,7 +24,7 @@
                 </div>
             </div>
             <div class="header-right">
-                <el-button type="primary" style="margin-right: 5px;">发帖<span class="iconfont icon-add"></span></el-button>
+                <el-button type="primary" style="margin-right: 5px;" @click="addForum">发帖<span class="iconfont icon-add"></span></el-button>
                 <el-button type="primary" style="margin-right: 5px;">搜索<span class="iconfont icon-search"></span></el-button>
                 <el-button-group v-if="store.state.loginUserInfo==null">
                     <el-button id="login" type="primary" plain @click="login(1)">登录</el-button>
@@ -224,6 +224,14 @@ document.addEventListener('scroll',()=>{
             document.querySelector('.header').style.display='block'
     }
 })
+//发帖
+const addForum=()=>{
+    if(store.state.loginUserInfo==null){
+        store.commit('showLogin',true)
+        return
+    }
+    router.push('/newPost')
+}
 </script>
 
 <style lang="scss" scoped>
@@ -301,9 +309,9 @@ document.addEventListener('scroll',()=>{
     }
 }
 .content{
-    width: 1300px;
+    // width: 1300px;
     min-height: calc(100vh - 210px);
-    height: 1200px;
+    // height: 1200px;
     margin: 0 auto;
     margin-top: 60px;
 }

@@ -17,3 +17,4 @@
         console.log(commentImg);
     })
  }
+ 9.<el-form>要用 :model

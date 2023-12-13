@@ -23,6 +23,8 @@ import Confirm from './utils/Utils'
 import Avatar from '@/components/Avatar.vue'
 import DataList from '@/components/DataList.vue'
 import imageViewer from '../src/components/ImageViewer.vue'
+import EditorMarkdown from '../src/components/EditorMarkdown.vue'
+import EditorHtml from '../src/components/EditorHtml.vue'
 const app=createApp(App)
 app.use(ElementPlus)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
@@ -46,4 +48,6 @@ app.config.globalProperties.Confirm=Confirm
  
 app.component('Avatar',Avatar)
 app.component('DataList',DataList)
+app.component('EditorMarkdown',EditorMarkdown)
+app.component('EditorHtml',EditorHtml)
 app.mount('#app')

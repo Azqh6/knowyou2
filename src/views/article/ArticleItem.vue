@@ -111,7 +111,7 @@ const props=defineProps({
     }
     .img{
         position: absolute;
-        right: 0px;
+        right: 50px;
         top: 20px;
         width: 100px;
         height: 100px;

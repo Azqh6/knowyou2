@@ -94,6 +94,7 @@ const postComment=()=>{
             return
         }
         proxy.Message.success('发送评论成功')
+        formDataRef.value.resetFields()
         formData.value.content=''
         commentImg.value=null
         emit('postedComment',res.data)

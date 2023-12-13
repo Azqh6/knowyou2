@@ -26,6 +26,16 @@ const router=createRouter({
                     path:'/post/:articleId',
                     name:'文章详情',
                     component:()=>import('@/views/articleDetails/articleDetails.vue')
+                },
+                {
+                    path:'/newPost',
+                    name:'发布文章',
+                    component:()=>import('@/views/postForum/postForum.vue')
+                },
+                {
+                    path:'/editPost/:articleId',
+                    name:'修改文章',
+                    component:()=>import('@/views/postForum/postForum.vue')
                 }
             ]
         }
