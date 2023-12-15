@@ -2,7 +2,7 @@
     <div class="articleBox">
         <div class="info">
             <Avatar :userId="data.userId" :height="30" :width="30"></Avatar>
-            <router-link to="/ucenter" class="userName">{{data.nickName}}</router-link>
+            <router-link :to="'/userCenter/' + data.userId" class="userName">{{data.nickName}}</router-link>
             <el-divider direction="vertical" />
             <div class="postTime">{{data.postTime}}</div>
             <div style="margin: 0px 5px;">·</div>
@@ -13,7 +13,13 @@
             <router-link class="boardName" :to="'/forum/'+data.pBoardId+'/'+data.boardId"> {{data.boardName}}</router-link>
         </div>
         <div class="article">
-            <router-link  class="title" :to="'/post/'+data.articleId">{{data.title}}</router-link>
+            <router-link  class="title" :to="'/post/'+data.articleId">
+                <span v-if="data.topType==1" class="top">置顶</span>
+                <span v-if="data.status!==1" class="validate">待审核</span>
+                <span v-if="htmlTitle" v-html="data.title"></span>
+                <span v-else>{{data.title}}  </span>
+                
+            </router-link>
             <div class="summary">{{data.summary?data.summary:'该文章暂无简介'}}</div>
         </div>
         <div class="footer">
@@ -45,6 +51,10 @@ const imgUrl=new URL('../../assets/cxk.jpg',import.meta.url).href
 const props=defineProps({
     data:{
         type:Object
+    },
+    htmlTitle:{
+        type:Boolean,
+        default:false
     }
 })
 </script>
@@ -84,12 +94,28 @@ const props=defineProps({
             font-weight: 700;
             margin-top: 10px;
             display: block;
-            @include text-router()
+            @include text-router();
+            .top{
+                font-size:13px;
+                border:1px solid rgb(243, 172, 172);
+                color: rgb(243, 172, 172);
+                border-radius: 5px;
+                margin-right: 5px;
+            }
+            .validate{
+                font-size:13px;
+                border:1px solid rgb(122, 122, 122);
+                color: rgb(122, 122, 122);
+                border-radius: 5px;
+                margin-right: 5px;
+            }
         }
         .summary{
             margin-top: 10px;
             color:#86909c ;
             font-size: 14px;
+            width: 800px;
+            text-overflow: ellipsis;
         }
     }
     .footer{

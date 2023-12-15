@@ -5,10 +5,12 @@ export default createStore({
         showLogin:false,
         boardList:[],
         articlePboard:0,
-        articleBoard:0
+        articleBoard:0,
+        messageCount:{},
+        sysSetting:{}
     },
     getters:{
-
+        
     },
     mutations:{
         updateLoginUserInfo(state,value){
@@ -26,6 +28,16 @@ export default createStore({
         setArticleBoard(state,value){
             state.articleBoard=value
         },
+        updateMessageCount(state,value){
+            state.messageCount=value
+        },
+        readMessage(state,value){
+            state.messageCount.total=state.messageCount.total-state.messageCount[value]
+            state.messageCount[value]=0
+        },
+        saveSysSetting:(state,value)=>{
+            state.sysSetting=value
+        }
     },
     actions:{}
 })

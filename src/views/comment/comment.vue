@@ -59,9 +59,11 @@ const changeType=(type)=>{
     getLoadComment()
 }
 //获取最新的评论
+const emit=defineEmits(['emitCommentTotal'])
 const getNewComment=(data)=>{
     commentList.value.list.unshift(data)
     commentList.value.totalCount++
+    emit('emitCommentTotal',commentList.value.totalCount)
 
 }
 const getCommentChildren=(res)=>{

@@ -11,7 +11,6 @@ const instance=axios.create({
 //请求前过滤器
 let loading=null
 instance.interceptors.request.use((config)=>{
-    console.log(config);
     if(config.showLoading){
         loading=ElLoading.service({
             lock:true,

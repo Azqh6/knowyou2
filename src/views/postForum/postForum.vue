@@ -10,8 +10,8 @@
                 </div>
             </template>
             <el-form-item prop="content">
-                <EditorMarkdown v-show="editorType===1" v-model="formData.markdownContent"  @htmlContent="setHtmlContent"></EditorMarkdown>
-                <EditorHtml v-show="editorType===0" v-model="formData.content"></EditorHtml>
+                <EditorMarkdown :height="800" v-if="editorType===1" v-model="formData.markdownContent"  @htmlContent="setHtmlContent"></EditorMarkdown>
+                <EditorHtml v-if="editorType===0" v-model="formData.content"></EditorHtml>
             </el-form-item>
             </el-card>
         </div>
@@ -23,10 +23,10 @@
             <el-form-item label="标题" prop="title" class="title">
                 <el-input type="text" placeholder="请输入标题" v-model="formData.title"></el-input>
             </el-form-item>
-            <el-form-item label="板块" porp="boardIds">
+            <el-form-item label="板块" prop="boardIds">
                 <el-cascader placeholder="请选择板块" :options="boardList" :props="boardProps" v-model="formData.boardIds" clearable style="width: 100%;" />
             </el-form-item>
-            <el-form-item label="封面" porp="cover">
+            <el-form-item label="封面" prop="cover">
                 <uploadCover v-model:modelValue="formData.cover"></uploadCover>
             </el-form-item>
             <el-form-item label="摘要" prop="summary">
@@ -69,7 +69,7 @@ const rules={
         {required:true,message:'请输入标题',trigger:'blur'}
     ],
     boardIds:[
-        {required:true,message:'请选择板块'}
+        {required:true,message:'选择板块'}
     ],
     content:[
         {required:true,message:'请输入内容'}
@@ -100,12 +100,22 @@ const loadBoard4Post=async()=>{
 //获取修改文章
 const articleId=ref(null)
 const editForum=()=>{
-    nextTick(async()=>{
+    if(articleId.value){
+        nextTick(async()=>{
         let res=await proxy.Request({
             url:api.articleDetail4Update,
             params:{
                 articleId:articleId.value
+            },
+            showError:false,
+        errorCallback:(response)=>{
+          ElMessageBox.alert(response.info,"错误",{
+            "show-close":false,
+            callback:(action)=>{
+              router.go(-1)
             }
+          })
+        }
         })
     if(!res){
         return
@@ -132,10 +142,16 @@ const editForum=()=>{
       editorType.value=articleInfo.editorType
       formData.value=articleInfo
     })
+    }else{
+        formData.value={}
+        editorType.value=proxy.VueCookies.get('editorType') || 0
+    }
+
 
 }
 watch(() =>route, (newVal, oldVal) => {
-    if(newVal.path.indexOf("/editPost") != -1 || newVal.path.indexOf("/newPost") != -1){
+    if(newVal.path.indexOf("/editPost") != -1){
+
         articleId.value=newVal.params.articleId
         editForum()
     }

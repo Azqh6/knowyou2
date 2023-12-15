@@ -18,3 +18,7 @@
     })
  }
  9.<el-form>要用 :model
+ 10.文本显示一行，多余省略号 要三个属性一起用
+    text-overflow:ellipsis;
+    white-space:nowarp;
+    overflow:hidden;

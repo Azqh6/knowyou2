@@ -25,7 +25,7 @@
             </div>
             <div class="header-right">
                 <el-button type="primary" style="margin-right: 5px;" @click="addForum">发帖<span class="iconfont icon-add"></span></el-button>
-                <el-button type="primary" style="margin-right: 5px;">搜索<span class="iconfont icon-search"></span></el-button>
+                <el-button type="primary" style="margin-right: 5px;" @click="search">搜索<span class="iconfont icon-search"></span></el-button>
                 <el-button-group v-if="store.state.loginUserInfo==null">
                     <el-button id="login" type="primary" plain @click="login(1)">登录</el-button>
                     <el-button id="register" type="primary" plain @click="login(0)">注册</el-button>
@@ -40,23 +40,23 @@
                             </span>
                             <template #dropdown>
                             <el-dropdown-menu>
-                                <el-dropdown-item>
+                                <el-dropdown-item @click="goMessage('reply')">
                                     回复我的
                                     <div class="messageItem" v-if="messageCount.reply>0">{{messageCount.reply>99?'99+':messageCount.reply}}</div>
                                 </el-dropdown-item>
-                                <el-dropdown-item>
+                                <el-dropdown-item @click="goMessage('likePost')">
                                     赞了我的文章
                                     <div class="messageItem" v-if="messageCount.likePost>0">{{messageCount.likePost>99?'99+':messageCount.likePost}}</div>
                                 </el-dropdown-item>
-                                <el-dropdown-item>
+                                <el-dropdown-item @click="goMessage('downloadAttachment')">
                                     下载了我的附件
                                     <div class="messageItem" v-if="messageCount.downloadAttachment>0">{{messageCount.downloadAttachment>99?'99+':messageCount.downloadAttachment}}</div>
                                 </el-dropdown-item>
-                                <el-dropdown-item>
+                                <el-dropdown-item @click="goMessage('likeComment')">
                                     赞了我的评论
                                     <div class="messageItem" v-if="messageCount.likeComment>0">{{messageCount.likeComment>99?'99+':messageCount.likeComment}}</div>
                                 </el-dropdown-item>
-                                <el-dropdown-item>
+                                <el-dropdown-item @click="goMessage('sys')">
                                     系统消息
                                     <div class="messageItem" v-if="messageCount.sys>0">{{messageCount.sys>99?'99+':messageCount.sys}}</div>
                                 </el-dropdown-item>
@@ -67,11 +67,11 @@
                     <div class="headPhoto">
                     <el-dropdown placement="bottom">
                         <span class="el-dropdown-link">  
-                                <Avatar :userId="userInfo.userId" :width="50" :height="50"></Avatar>
+                              <Avatar :userId="userInfo.userId" :width="50" :height="50"></Avatar>
                         </span>
                         <template #dropdown>
                         <el-dropdown-menu>
-                            <el-dropdown-item>个人中心</el-dropdown-item>
+                            <el-dropdown-item><router-link  style="text-decoration: none;color: #606266;" :to="'/userCenter/'+store.state.loginUserInfo.userId">个人中心</router-link></el-dropdown-item>
                             <el-dropdown-item @click="logout">退出</el-dropdown-item>
                         </el-dropdown-menu>
                         </template>
@@ -168,15 +168,7 @@ const logout= async()=>{
     location.reload()
 
 }
-const userInfo=ref({})
-watch(() =>store.state.loginUserInfo, (newVal, oldVal) => {
-    if(newVal !== undefined && newVal !== null){
-        userInfo.value=newVal
-        store.commit('showLogin',false)
-    }else{
-        store.commit('showLogin',true)
-    }
-}, { immediate: true, deep: true });
+
 //获取所有板块
 const boardList=ref([])
 const getBoard=async()=>{
@@ -192,7 +184,7 @@ const getBoard=async()=>{
 }
 getBoard()
 //获取消息
-const messageCount=ref({})
+const messageCount=ref(store.state.messageCount)
 const getMessageCount=async ()=>{
     let res =await proxy.Request({
         url:api.getMessageCount
@@ -201,6 +193,7 @@ const getMessageCount=async ()=>{
         return
     }
     messageCount.value=res.data
+    store.commit('updateMessageCount',res.data)
 }
 //点击一级板块
 const handlerPboard=(board)=>{
@@ -231,6 +224,25 @@ const addForum=()=>{
         return
     }
     router.push('/newPost')
+}
+//消息跳转
+const goMessage=(type)=>{
+    router.push('/message/'+type)
+}
+
+const userInfo=ref({})
+watch(() =>store.state.loginUserInfo, (newVal, oldVal) => {
+    getMessageCount()
+    if(newVal !== undefined && newVal !== null){
+        userInfo.value=newVal
+        store.commit('showLogin',false)
+    }else{
+        store.commit('showLogin',true)
+    }
+}, { immediate: true, deep: true });
+//发帖
+const search=()=>{
+    router.push('/search')
 }
 </script>
 
@@ -312,7 +324,7 @@ const addForum=()=>{
     // width: 1300px;
     min-height: calc(100vh - 210px);
     // height: 1200px;
-    margin: 0 auto;
+    // margin: 0 auto;
     margin-top: 60px;
 }
 </style>

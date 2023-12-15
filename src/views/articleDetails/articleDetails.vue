@@ -20,7 +20,7 @@
                     {{articleDetails.postTime}}·{{ articleDetails.userIpAddress }}
                    <span class="read"><span class="iconfont icon-eye-solid"></span>{{ articleDetails.readCount }}</span>
                     <span v-if="store.state.loginUserInfo !== null && articleDetails.userId == store.state.loginUserInfo.userId">
-                        <router-link :to="'/editPost/'+articleDetails.articleId"><span>编辑</span></router-link>
+                        <router-link class="a-link" :to="'/editPost/'+articleDetails.articleId"><span class="iconfont icon-edit" style="font-size: 14px;margin-left: 20px;">&nbsp;编辑</span></router-link>
                     </span>
                 </div>
             </div>
@@ -42,7 +42,7 @@
   </div>
   <!-- 评论 -->
   <div class="comments" id="comments">
-    <comment  :articleId="articleId" :commentCount="articleDetails.commentCount"></comment>
+    <comment  :articleId="articleId" :commentCount="articleDetails.commentCount" @emitCommentTotal="getCommentTotal"></comment>
   </div>
   <!-- 快捷栏 -->
   <div class="left">
@@ -59,6 +59,15 @@
     <div class="attachment-contral" v-if="article.attachment !== null"  @click="attachmentBtn('attachment')" >
         <span class="iconfont icon-attachment" style="font-size: 22px;"></span>
     </div>
+  </div>
+  <!-- 目录 -->
+  <div class="directory">
+    <div class="header">目录</div>
+    <div style="padding: 10px;">
+        <div v-if="tocList.length>0" v-for="(item,index) in tocList" :key="index" :class="['title',activeIndex==item.index?'active':'']" :style="{paddingLeft:15*item.level+'px'}" @click="toDirectory(item.index)">{{item.title}}</div>
+        <div v-else class="noDirectory">未解析到目录</div>
+    </div>
+
   </div>
   <ImageViewer ref="imageViewerRef" :imageList="previewImgList"></ImageViewer>
 
@@ -84,6 +93,7 @@ const api={
 }
 onMounted(()=>{
     getArticleDetails()
+    window.addEventListener('scroll',scrollDirectory)
 })
 
 //获取文章详情
@@ -109,8 +119,8 @@ const getArticleDetails=async()=>{
     store.commit('setArticlePboard',articleDetails.value.pBoardId)
     imagePreview()
     highlightCode()
+    changeDirectory()
 }
-
 //点赞
 const doLike=async ()=>{
     if(store.state.loginUserInfo==null){
@@ -177,6 +187,9 @@ const attachmentBtn=(id)=>{
         inline:'start'
     })
 }
+const getCommentTotal=(res)=>{
+    articleDetails.value.commentCount=res
+}
 //图片预览
 const imageViewerRef=ref(null)
 const previewImgList=ref([])
@@ -207,6 +220,57 @@ const highlightCode=()=>{
 watch(() =>route.params, (newVal, oldVal) => {
     articleId.value=newVal.articleId
 }, { immediate: true, deep: true });
+//解析目录
+    const tocList=ref([])
+    const changeDirectory=()=>{
+        const directoryList=['H1','H2','H3','H4','H5','H6',]
+        nextTick(()=>{
+            const contentToc=document.querySelector('#content')
+            const childNodes=contentToc.childNodes
+            let index=0
+            childNodes.forEach((item)=>{
+               if(directoryList.includes(item.tagName)){
+                    tocList.value.push({
+                        title:item.innerText,
+                        level:Number(item.tagName.slice(1)), 
+                        index:index,
+                        offsetTop:item.offsetTop
+                    })
+                item.setAttribute('id','toc'+index)
+                    index++
+               }
+            })
+
+        })
+    }
+//目录点击事件
+let activeIndex=ref(0)
+const toDirectory=(index)=>{
+    activeIndex.value=index
+    let titleId=document.querySelector('#toc'+index)
+    titleId.scrollIntoView({
+        behavior:'smooth',
+        block:'start',
+        inline:'start'
+    })
+}
+//获取滚动条的高度
+const getScrollTop=()=>{
+    let scrollTop=document.body.scrollTop || document.documentElement.scrollTop
+    return scrollTop
+}
+const scrollDirectory=()=>{
+    let scrollTop=getScrollTop()
+    tocList.value.some(item=>{
+        if(item.index>0 && scrollTop>tocList.value[item.index-1].offsetTop && scrollTop<tocList.value[item.index].offsetTop){
+            activeIndex.value=item.index
+            return true
+        }else if( scrollTop<tocList.value[0].offsetTop){
+            activeIndex.value=0
+            return true
+        }
+    })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -224,7 +288,7 @@ watch(() =>route.params, (newVal, oldVal) => {
     position: relative;
     padding-top: 10px;
     width: 1000px;
-    margin: 0 auto;
+    margin-left: 302px;
     .board-nav{
         display: flex;
         align-items: center;
@@ -268,13 +332,19 @@ watch(() =>route.params, (newVal, oldVal) => {
                 }
             }
         }
+        #content{
+            letter-spacing: 1px;
+            line-height: 22px;
+            width: 1000px;
+
+        }
     }
 }
 .attachment{
     width: 1000px;
     box-sizing: border-box;
     background-color: #fff;
-    margin: 0 auto;
+    margin-left: 302px;
     margin-top: 20px;
     padding: 20px;
     .title{
@@ -315,7 +385,7 @@ watch(() =>route.params, (newVal, oldVal) => {
     background-color: #fff;
     width: 1000px;
     padding: 20px;
-    margin: 0 auto;
+    margin-left: 302px;
     margin-top: 20px;
     min-height: 300px;
 }
@@ -345,4 +415,48 @@ watch(() =>route.params, (newVal, oldVal) => {
     }
 
 }
+.directory{
+    position:fixed;
+    left: 1317px;
+    top: 110px;
+    width: 285px;
+    max-height: 500px;
+    min-height: 150px;
+    background-color: #fff;
+    overflow: auto;
+    .header{
+        box-sizing: border-box;
+        padding: 10px;
+        height: 40px;
+        border-bottom: 1px solid #ddd;
+    }
+    .title{
+        height: 30px;
+        font-size: 14px;
+        line-height: 30px;
+        color: #555666;
+        cursor: pointer;
+        &:hover{
+            background-color: #ddd;
+        }
+    }
+    .active{
+        background-color: #ddd;
+        border-left: 2px solid var(--hoverColor);
+    }
+    .noDirectory{
+        font-size: 14px;
+        text-align: center;
+        color:#949292;
+        line-height: 150px;
+    }
+}
+</style>
+<style>
+    #content{
+        img{
+        max-width: 90%;
+        }
+    }
+
 </style>

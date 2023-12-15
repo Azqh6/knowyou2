@@ -36,6 +36,21 @@ const router=createRouter({
                     path:'/editPost/:articleId',
                     name:'修改文章',
                     component:()=>import('@/views/postForum/postForum.vue')
+                },
+                {
+                    path:'/userCenter/:userId',
+                    name:'用户中心',
+                    component:()=>import('@/views/userCenter/userCenter.vue')
+                },
+                {
+                    path:'/message/:type',
+                    name:'消息中心',
+                    component:()=>import('@/views/message/messageList.vue')
+                },
+                {
+                    path:'/search',
+                    name:'搜索',
+                    component:()=>import('../views/search/search.vue')
                 }
             ]
         }

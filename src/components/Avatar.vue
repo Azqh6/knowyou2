@@ -30,13 +30,13 @@
   
   const goToUcenter=()=>{
       if(props.addLink){
-          router.push("/user/"+proxy.userId)
+          router.push("/userCenter/"+proxy.userId)
       }
   }
   
   </script>
   
-  <style lang="scss">
+  <style lang="scss" scoped>
   .avatar{
       cursor: pointer;
       display: flex;

@@ -25,6 +25,8 @@ import DataList from '@/components/DataList.vue'
 import imageViewer from '../src/components/ImageViewer.vue'
 import EditorMarkdown from '../src/components/EditorMarkdown.vue'
 import EditorHtml from '../src/components/EditorHtml.vue'
+import Dialog from '../src/components/Dialog.vue'
+import uploadCover from '../src/components/uploadCover.vue'
 const app=createApp(App)
 app.use(ElementPlus)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
@@ -50,4 +52,6 @@ app.component('Avatar',Avatar)
 app.component('DataList',DataList)
 app.component('EditorMarkdown',EditorMarkdown)
 app.component('EditorHtml',EditorHtml)
+app.component('Dialog',Dialog)
+app.component('uploadCover',uploadCover)
 app.mount('#app')
