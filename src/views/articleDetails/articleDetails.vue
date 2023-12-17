@@ -172,10 +172,6 @@ const fileDownLoad=async(id)=>{
         proxy.Message.warning('你的积分不够，无法下载')
         return
     }
-    proxy.Confirm(`你还有${res.data.userIntegral}积分，当前下载会扣除${attachment.value.integral}积分,确定要下载吗？`,()=>{
-        document.location.href=api.attachmentDownload+'?fileId='+id
-        attachment.value.downloadCount +=1
-  })
 
 }
 //快捷栏附件

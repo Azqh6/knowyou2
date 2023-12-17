@@ -84,6 +84,28 @@
     <div class="content">
         <router-view></router-view>
     </div>
+    <div class="footer" v-if="showFooter">
+            <div class="footer-content"  :style="{ width: proxy.globalInfo.bodyWidth + 'px' }">
+                <el-row>
+                    <el-col :span="6" class="item">
+                        <div class="logo">
+                            <div class="logo-letter">
+                                <span v-for="item in logos" :style="{ color: item.color }">{{ item.text }}</span>
+                            </div>
+                            <div class="info">
+                                一个懂你的社区
+                            </div>
+                        </div>
+                    </el-col>
+                    <el-col :span="6" class="item">
+                        <div class="title">网站相关</div>
+                        <div><img src="@/assets/erweima.png" style="width: 80px; height: 80px;"></div>
+                    </el-col>
+                    <el-col :span="6" class="item"></el-col>
+                    <el-col :span="6" class="item"></el-col>
+                </el-row>
+            </div>
+        </div>
     <loginAndRegister ref="loginAndRegisterRef"></loginAndRegister>
 </template>
 
@@ -168,7 +190,6 @@ const logout= async()=>{
     location.reload()
 
 }
-
 //获取所有板块
 const boardList=ref([])
 const getBoard=async()=>{
@@ -229,7 +250,6 @@ const addForum=()=>{
 const goMessage=(type)=>{
     router.push('/message/'+type)
 }
-
 const userInfo=ref({})
 watch(() =>store.state.loginUserInfo, (newVal, oldVal) => {
     getMessageCount()
@@ -244,6 +264,14 @@ watch(() =>store.state.loginUserInfo, (newVal, oldVal) => {
 const search=()=>{
     router.push('/search')
 }
+const showFooter=ref(true)
+watch(() => route.path,(newVal, oldVal) => {
+    if(newVal.indexOf("newPost") != -1 && newVal.indexOf("editPost") != -1){
+        showFooter.value=false
+    }else{
+        showFooter.value=true
+    }
+}, { immediate: true, deep: true });
 </script>
 
 <style lang="scss" scoped>
@@ -326,6 +354,39 @@ const search=()=>{
     // height: 1200px;
     // margin: 0 auto;
     margin-top: 60px;
+}
+.footer{
+    background: #e9e9e9;
+    height: 140px;
+    margin-top: 10px;
+
+    .footer-content{
+        margin: 0px auto;
+        padding-top: 10px;
+        .item{
+            text-align: left;
+            .title{
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+            a{
+                font-size: 14px;
+                text-decoration: none;
+                color:var(--linkColor);
+                line-height: 25px;
+            }
+        }
+        .logo{
+            .logo-letter{
+                font-size: 30px;
+            }
+            .info{
+                margin-top: 10px;
+                color: rgb(93, 92, 91);
+
+            }
+        }
+    }
 }
 </style>
 <style lang="scss" >
