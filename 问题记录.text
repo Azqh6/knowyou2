@@ -5,7 +5,7 @@
 4.锚点定位 scrollIntoView
 5.图片预览 el-plus中 el-image-viewer
 6.代码高亮 highlight.js
-7.附件下载 document.location.href=
+7.附件下载 document.location.href 或者通过 a标签的href
 8.图片上传const selectImg = (file) => {
     file=file.file
     let img=new FileReader()

@@ -3,6 +3,7 @@
     <Avatar :width="50" :height="50" :userId="store.state.loginUserInfo==null?'':store.state.loginUserInfo.userId" ></Avatar>
     <el-form :model="formData" :rules="rules" style="margin-left: 20px;" ref="formDataRef">
         <el-form-item prop="content">
+            <!-- 发布评论 -->
             <el-input
                 clearable
                 :style="{width:props.width + 'px'}"
@@ -15,6 +16,7 @@
                 show-word-limit
                 
             />
+            <!-- 发布评论的图片 -->
             <div class="img" v-if="commentImg !== null " @click="removeImg">
                 <span class="iconfont icon-remove"></span>
                 <img :src="commentImg">
@@ -56,10 +58,10 @@ const props=defineProps({
         default:true
     },
     replyUserId:{
-
+        type:String
     },
     pCommentId:{
-
+        type:String
     }
 })
 //评论校验
@@ -72,6 +74,7 @@ const rules={
 const formDataRef=ref()
 const emit=defineEmits(['postedComment'])
 const postComment=()=>{
+    //未登录状态
     if(store.state.loginUserInfo==null){
         store.commit('showLogin',true)
     }
@@ -82,6 +85,7 @@ const postComment=()=>{
         let params = Object.assign({}, formData.value)
         params.articleId=props.articleId
         params.pCommentId=0
+        //判断是否为二级回复评论
         if(props.replyUserId && props.pCommentId){
             params.replyUserId=props.replyUserId
             params.pCommentId=props.pCommentId
@@ -94,9 +98,11 @@ const postComment=()=>{
             return
         }
         proxy.Message.success('发送评论成功')
+        //重置表单
         formDataRef.value.resetFields()
         formData.value.content=''
         commentImg.value=null
+        //评论内容传回给父组件展示
         emit('postedComment',res.data)
     })
    

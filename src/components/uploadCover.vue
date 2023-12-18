@@ -32,7 +32,6 @@
           default:null
       }
   })
-  
   const localFile=ref(null)
   const emit=defineEmits()
   const uploadImage=async(file)=>{

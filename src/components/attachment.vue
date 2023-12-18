@@ -40,26 +40,27 @@ const delFile = () => {
 <style lang="scss">
 .attachment-selector {
     width: 100%;
-    
 
-   .file-show{
-    display: flex;
-    justify-content: space-around;
-    .file-name {
-        flex: 1;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        color: #409eff
-    }
 
-    .icon-del {
-        width: 20px;
-        color: #409eff;
-        cursor: pointer;
-        margin-left: 10px;
+    .file-show {
+        display: flex;
+        justify-content: space-around;
+
+        .file-name {
+            flex: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            color: #409eff
+        }
+
+        .icon-del {
+            width: 20px;
+            color: #409eff;
+            cursor: pointer;
+            margin-left: 10px;
+        }
     }
-   }
 }
 </style>
   

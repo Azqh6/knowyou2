@@ -1,4 +1,4 @@
-import { async } from '@kangc/v-md-editor'
+
 import {ElMessageBox} from 'element-plus'
 const Confirm=(message,okfun)=>{
     ElMessageBox.confirm(message,'提示',{

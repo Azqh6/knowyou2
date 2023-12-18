@@ -105,14 +105,20 @@
                     <el-col :span="6" class="item"></el-col>
                 </el-row>
             </div>
-        </div>
+    </div>
     <loginAndRegister ref="loginAndRegisterRef"></loginAndRegister>
+    <!-- 回到顶部 -->
+    <div id="backTopBox">
+        <div class="backTop" id="backTop" @click="backTop">
+            <div class="top"></div>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import {useStore} from 'vuex'
 import loginAndRegister from './loginAndRegister/index.vue'
 import {useRouter,useRoute} from 'vue-router'
+import {useStore} from 'vuex'
 import { ref, reactive, getCurrentInstance, nextTick,watch,onMounted } from "vue"
 const { proxy } = getCurrentInstance();
 const store=useStore()
@@ -132,31 +138,31 @@ onMounted(()=>{
 //logo
 const logo=[
     {
-        name:'E',
+        name:'K',
         color:'rgb(50, 133, 255)'
     },
     {
-        name:'a',
+        name:'n',
         color:'rgb(251, 54, 36)'
     },
     {
-        name:'s',
+        name:'o',
         color:'rgb(255, 186, 2)'
     },
     {
-        name:'y',
+        name:'w',
         color:'rgb(50, 133, 255)'
     },
     {
-        name:'B',
+        name:'y',
         color:'rgb(37, 178, 78)'
     },
     {
-        name:'B',
+        name:'o',
         color:'rgb(251, 54, 36)'
     },
     {
-        name:'s',
+        name:'u',
         color:'rgb(255, 186, 2)'
     },
 ]
@@ -175,6 +181,7 @@ const getLoginInfo=async()=>{
     if(!res){
         return 
     }
+    //登录信息存入store，便于其他组件联动
     store.commit('updateLoginUserInfo',res.data)
 }
 //退出登录
@@ -187,6 +194,7 @@ const logout= async()=>{
     }
     proxy.Message.success('退出成功')
     store.commit('updateLoginUserInfo',null)
+    //刷新当前页面，以实现退出当前页面状态
     location.reload()
 
 }
@@ -199,11 +207,11 @@ const getBoard=async()=>{
     if(!res){
         return
     }
-    boardList.value=res.data    
+    boardList.value=res.data
+    //将板块存入store,以实现顶部tab和气泡弹窗的标题高亮    
     store.commit('setBoardList',res.data)
 
 }
-getBoard()
 //获取消息
 const messageCount=ref(store.state.messageCount)
 const getMessageCount=async ()=>{
@@ -216,11 +224,11 @@ const getMessageCount=async ()=>{
     messageCount.value=res.data
     store.commit('updateMessageCount',res.data)
 }
-//点击一级板块
+//点击一级板块-跳转
 const handlerPboard=(board)=>{
     router.push('/forum/'+board.boardId)
 }
-//点击二级板块
+//点击二级板块-跳转
 const handlerBoard=(board)=>{
     router.push('/forum/'+board.pBoardId+'/'+board.boardId)
 }
@@ -228,6 +236,7 @@ const handlerBoard=(board)=>{
 const Yoffset=ref(0)
 document.addEventListener('scroll',()=>{
     let scrollTop=document.documentElement.scrollTop || document.body.scrollTop
+    //通过scroll值的正负，来判断滚动方向 >0向下
     let scroll=scrollTop-Yoffset.value
     Yoffset.value=scrollTop
     if(scroll>0){
@@ -250,6 +259,7 @@ const addForum=()=>{
 const goMessage=(type)=>{
     router.push('/message/'+type)
 }
+//watch监听 监听store中userInfo,来判断登录模块是否显示与隐藏
 const userInfo=ref({})
 watch(() =>store.state.loginUserInfo, (newVal, oldVal) => {
     getMessageCount()
@@ -260,10 +270,11 @@ watch(() =>store.state.loginUserInfo, (newVal, oldVal) => {
         store.commit('showLogin',true)
     }
 }, { immediate: true, deep: true });
-//发帖
+//发帖-跳转
 const search=()=>{
     router.push('/search')
 }
+//通过监听路由变化，来控制页面底部的显示（发帖和编辑帖子不显示）
 const showFooter=ref(true)
 watch(() => route.path,(newVal, oldVal) => {
     if(newVal.indexOf("newPost") != -1 && newVal.indexOf("editPost") != -1){
@@ -272,6 +283,26 @@ watch(() => route.path,(newVal, oldVal) => {
         showFooter.value=true
     }
 }, { immediate: true, deep: true });
+//回到顶部按钮
+const backTop=()=>{
+    let timer=setInterval(()=>{
+        let scrollTop=document.documentElement.scrollTop || document.body.scrollTop
+        let speed=Math.floor(-scrollTop/5)
+        document.documentElement.scrollTop=scrollTop+speed
+        if(scrollTop==0){
+            clearInterval(timer)
+        }
+    },20)
+}
+document.addEventListener('scroll',()=>{
+    let backTop=document.getElementById('backTopBox')
+    let scrollTop=document.documentElement.scrollTop || document.body.scrollTop
+    if(scrollTop>200){
+        backTop.style.opacity=1
+    }else{
+        backTop.style.opacity=0
+    }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -388,6 +419,35 @@ watch(() => route.path,(newVal, oldVal) => {
         }
     }
 }
+#backTopBox{
+    opacity: 0;
+    transition: all .2s ease-in-out;
+    .backTop{
+    position: fixed;
+    right: 100px;
+    bottom: 100px;
+    width: 40px;
+    height: 40px;
+    background-color: #fff;
+    border-radius:20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 0px 6px rgba(0,0,0,.12);
+    .top{
+        width: 0px;
+        height: 0px;
+        border-left: 6.5px solid transparent;
+        border-right: 6.5px solid transparent;
+        border-bottom: 7.5px solid #409eff;
+
+    }
+    &:hover{
+        background-color: #f2f6fc;
+    }
+}
+}
+
 </style>
 <style lang="scss" >
     .sub-board-list{
@@ -397,7 +457,7 @@ watch(() => route.path,(newVal, oldVal) => {
             border-radius: 20px;
             margin-right: 10px;
             background:rgb(239,239,239);
-            border: 1px solid #ddd;
+            border: 1px solid #ccc8c8;
             color:rgb(119, 118, 118);
             margin-top: 10px;
             cursor: pointer;

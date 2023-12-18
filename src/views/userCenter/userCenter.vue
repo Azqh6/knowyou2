@@ -129,6 +129,7 @@ const getUserInfo= async()=>{
 watch(()=>route,(newVar,oldVar)=>{
     if(route.path.indexOf('/userCenter') !== -1)
     userId.value=newVar.params.userId
+    store.state.articlePboard=1
     getUserInfo()
 },{immediate:true,deep:true})
 
@@ -147,7 +148,8 @@ const getUserArticle=async()=>{
         params:{
             type:type.value,
             userId:userId.value
-        }
+        },
+        showLoading:false
     })
     if(!res){
         return

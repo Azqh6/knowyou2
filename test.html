@@ -8,8 +8,10 @@
 <body>
     13132
     <script>
-        const time=new Date().getTime()
-        console.log(time);
+        const regex=/^[0-9]{4}-(0[1-9]|1[0-2])-([0-2][1-9]|3[01])$/g
+        const string='2023-12-31'
+        console.log(string.match(regex));
+        console.log(regex.test(string));
     </script>
 </body>
 </html>
