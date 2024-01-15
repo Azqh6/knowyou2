@@ -1,5 +1,5 @@
 <template>
-    <Dialog :show="store.state.showLogin" :title="title" :showCancel="false" width="400px"
+    <Dialog class="loginBox" :show="store.state.showLogin" :title="title" :showCancel="false" width="400px"
         @close="store.commit('showLogin', false)">
         <el-form :model="dataForm" :rules="rules" ref="dataFormRef">
             <!-- 邮箱 -->
@@ -14,7 +14,7 @@
             <el-form-item style="margin: 0;" v-if="loginType != 1">
                 <el-input v-model="dataForm.emailCode" placeholder="请输入邮箱验证码"
                     style="width: 255px;margin-right: 5px;"></el-input>
-                <el-button type="primary" size="large" @click="emailCheck">获取验证码</el-button>
+                <el-button type="primary" size="large" @click="emailCheck" :disabled="sendEmailBtn">{{sendEailText}}</el-button>
                 <el-popover placement="left" width="500" trigger="click">
                     <div>
                         <p>1、在垃圾箱中查找邮箱验证码</p>
@@ -133,7 +133,7 @@
 <script setup>
 import Dialog from '@/components/Dialog.vue'
 import md5 from 'js-md5'
-import { getCurrentInstance, ref, nextTick } from 'vue'
+import { getCurrentInstance, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 const store = useStore()
 const { proxy } = getCurrentInstance()
@@ -249,6 +249,22 @@ const emailCheck = () => {
     })
 }
 //发送邮件
+const sendEmailBtn=ref(false)
+const sendEailText=ref('获取验证码')
+const countDown = ()=>{
+    let allCount=ref(60)
+    let timer=setInterval(()=>{
+        allCount.value--;
+        sendEailText.value=allCount.value+'s'
+        sendEmailBtn.value=true
+        if(allCount.value==0){
+            clearInterval(timer)
+            allCount.value=60
+            sendEailText.value='获取验证码'
+            sendEmailBtn.value=false
+        }
+    },1000)
+}
 const sendEmailCode = () => {
     sendEmailCodeFormRef.value.validate(async (valid) => {
         if (!valid) {
@@ -269,8 +285,11 @@ const sendEmailCode = () => {
         }
         proxy.Message.success('发送邮件成功')
         emailCheckShow.value = false
+        countDown()
+
     })
 }
+
 //注册 登录 重置密码
 const doSubmit = () => {
     dataFormRef.value.validate(async (valid) => {
@@ -345,35 +364,49 @@ const changePsdType = (type) => {
         psdType.value = 'password'
     }
 }
+watch(() =>emailCheckShow.value, (newVal, oldVal) => {
+    sendEmailCodeForm.value.checkCode=''
+}, {  deep: true });
 </script>
 
 <style lang="scss" scoped>
-:deep(.el-input) {
+.loginBox{
+    overflow: hidden;
+    :deep(.cust-dialog .dialog-body){
+        overflow: auto;
+    }
+    :deep(.cust-dialog .dialog-body)::-webkit-scrollbar{
+        width: 0px; 
+    }
+    :deep(.el-input) {
     height: 40px;
-}
+    }
 
-.checkCode {
-    width: 130px;
-    height: 38px;
-}
+    .checkCode {
+        width: 130px;
+        height: 38px;
+    }
 
-.footer {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
+    .footer {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
 
-    span {
-        display: inline-block;
+        span {
+            display: inline-block;
+        }
+    }
+
+    .btn {
+        width: 100%;
+        height: 30px;
+        background-color: #409eff;
+        text-align: center;
+        line-height: 30px;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
     }
 }
 
-.btn {
-    width: 100%;
-    height: 30px;
-    background-color: #409eff;
-    text-align: center;
-    line-height: 30px;
-    color: #fff;
-    border-radius: 5px;
-    cursor: pointer;
-}</style>
+</style>

@@ -144,7 +144,7 @@ const props = defineProps({
 
     .line {
         position: absolute;
-        width: 100%;
+        width: 95%;
         height: 1px;
         background-color: #ddd;
         bottom: 0px;

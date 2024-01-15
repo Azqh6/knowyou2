@@ -1,6 +1,6 @@
 <template>
-  <div class="searchBox">
-    <div class="search-panel" :style="{ 'padding-top': starSearch ? '20px' : '200px' }">
+  <div :class="['searchBox',starSearch?'search-active': '']">
+    <div class='search-panel'>
       <el-form :model="formData" :rules="rules" ref="formDataRef" lebel-width="80px" @submit.native.prevent>
         <el-form-item label="" prop="">
           <el-input size="large" clearable placeholder="输入你想要查找的关键词" v-model="formData.keyword" @keyup.enter="search"
@@ -85,7 +85,8 @@ const changeInput = () => {
 .searchBox {
   width: 1300px;
   margin: 0 auto;
-
+  padding-top: 200px;
+  transition: all 0.5s;
   .search-body {
     background: #fff;
     padding: 10px;
@@ -94,16 +95,19 @@ const changeInput = () => {
     .search-panel {
       display: flex;
       justify-content: center;
-
+      padding-top: 200px;
       .el-input {
         width: 700px;
-
         .iconfont {
           cursor: pointer;
         }
       }
     }
+
   }
 }
+    .search-active{
+      padding-top: 20px;
+    }
 </style>
   
