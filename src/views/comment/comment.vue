@@ -13,7 +13,7 @@
     </div>
     <!-- 评论 -->
     <div class="commentList">
-        <DataList :dataSource="commentList">
+        <DataList :dataSource="commentList" @loadData="getLoadComment">
             <template #default="{ data }">
                 <commentItem :commentData="data" @commentChildren="getCommentChildren" @commentDoLike="getCommentDoLike">
                 </commentItem>

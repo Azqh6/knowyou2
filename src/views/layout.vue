@@ -90,7 +90,7 @@
                     <el-col :span="6" class="item">
                         <div class="logo">
                             <div class="logo-letter">
-                                <span v-for="item in logos" :style="{ color: item.color }">{{ item.text }}</span>
+                                <span v-for="(item,index) in logo" :style="{color:item.color}">{{ item.name }}</span>
                             </div>
                             <div class="info">
                                 一个懂你的社区
@@ -99,10 +99,17 @@
                     </el-col>
                     <el-col :span="6" class="item">
                         <div class="title">网站相关</div>
-                        <div><img src="@/assets/erweima.png" style="width: 80px; height: 80px;"></div>
+                        <div class="title-item">常见问题</div>
+                        <div class="title-item">规章制度</div>
+                        <div class="title-item">免责声明</div>
                     </el-col>
-                    <el-col :span="6" class="item"></el-col>
-                    <el-col :span="6" class="item"></el-col>
+                    <el-col :span="6" class="item">
+                        <div class="title">友情链接</div>
+                        <div class="title-item">友情链接</div>
+                    </el-col>
+                    <el-col :span="6" class="item">
+                        <div class="title">关注站长</div>
+                        <div><img src="@/assets/erweima.png" style="width: 80px; height: 80px;"></div></el-col>
                 </el-row>
             </div>
     </div>
@@ -400,6 +407,12 @@ document.addEventListener('scroll',()=>{
                 font-size: 18px;
                 margin-bottom: 10px;
             }
+            .title-item{
+                    font-size: 14px;
+                    color: #61666d;
+                    margin-bottom: 5px;
+                    cursor: pointer;
+                }
             a{
                 font-size: 14px;
                 text-decoration: none;

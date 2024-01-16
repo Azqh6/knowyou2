@@ -31,7 +31,7 @@ const props=defineProps({
   },
   loading:{
       type:Boolean
-  }
+  },
 })
 const emit=defineEmits(["loadData"])
 const handlePageNoChange=(pageNo)=>{

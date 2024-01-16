@@ -15,8 +15,8 @@
                 <el-divider direction="vertical"></el-divider>
                 <div :class="{ active: orderType == 2 ? 'active' : '' }" @click="changeOrderType(2)">最新</div>
             </div>
-            <DataList :dataSource="articleList">
-                <template v-slot="data" @loadData="getArticleList">
+            <DataList :dataSource="articleList" @loadData="getArticleList">
+                <template v-slot="data" >
                     <ArticleItem :data="data.data"></ArticleItem>
                 </template>
             </DataList>
@@ -59,7 +59,8 @@ const getArticleList = async () => {
     let params = {
         pBoardId: pBoardId.value,
         boardId: boardId.value,
-        orderType: orderType.value
+        orderType: orderType.value,
+        pageNo:articleList.value.pageNo
     }
     let res = await proxy.Request({
         url: api.getArticleList,
